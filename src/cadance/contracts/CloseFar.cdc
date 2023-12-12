@@ -1,6 +1,6 @@
 import NonFungibleToken from 0xNonFungibleToken
 
-pub contract CloseFar: NonFungibleToken {
+pub contract CloseFarNFT: NonFungibleToken {
   
   pub var totalSupply: UInt64
 
@@ -10,18 +10,27 @@ pub contract CloseFar: NonFungibleToken {
 
   pub event Deposit(id: UInt64, to: Address?)
 
+  pub let nftCollectionStoragePath: StoragePath
+  
+  pub let nftCollectionPublicPath: PublicPath
+
+  pub let nftCollectionPrivatePath: PrivatePath
+
   pub resource NFT: NonFungibleToken.INFT {
     pub let id: UInt64
     pub let ipfsHash: String
 
     init(ipfsHash: String) {
-      self.id = CloseFar.totalSupply
+      self.id = CloseFarNFT.totalSupply
       self.ipfsHash = ipfsHash
-      CloseFar.totalSupply = CloseFar.totalSupply + 1
+      CloseFarNFT.totalSupply = CloseFarNFT.totalSupply + 1
     }
   }
 
   pub resource interface CollectionPublic {
+    pub fun deposit(token: @NonFungibleToken.NFT)
+    pub fun getIDs(): [UInt64]
+    pub fun idExists(id: UInt64): Bool
     pub fun borrowEntireNFT(id: UInt64): &NFT
   }
 
@@ -53,6 +62,10 @@ pub contract CloseFar: NonFungibleToken {
       return reference as! &NFT
     }
 
+    pub fun idExists(id: UInt64): Bool {
+      return self.ownedNFTs[id] != nil
+    }
+
     init() {
       self.ownedNFTs <- {}
     }
@@ -72,6 +85,9 @@ pub contract CloseFar: NonFungibleToken {
 
   init() {
     self.totalSupply = 0
+    self.nftCollectionStoragePath = /storage/CloseFarNFTCollection
+    self.nftCollectionPublicPath = /public/CloseFarNFTCollection
+    self.nftCollectionPrivatePath = /private/CloseFarNFTCollection
     emit ContractInitialized()
   }
 }
