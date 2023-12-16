@@ -3,7 +3,7 @@ import CloseFarNFT from 0xCloseFarNFT
 transaction(ipfsHash: String) {
 
   prepare(acct: AuthAccount) {
-    let collection = acct.borrow<&CloseFarNFT.Collection>(from: CloseFarNFT.nftCollectionStoragePath)
+    let collection = acct.borrow<&CloseFarNFT.Collection>(from: CloseFarNFT.CollectionStoragePath)
                         ?? panic("the NFT collection does not exist!")
 
     let nft <- CloseFarNFT.createNFT(ipfsHash: ipfsHash)

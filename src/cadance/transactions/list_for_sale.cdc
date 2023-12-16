@@ -1,19 +1,19 @@
-import FlowToken from 0xFlowToken
+import FungibleToken from 0xFungibleToken
 import CloseFarNFT from 0xCloseFarNFT
 import CloseFarMarketplace from 0xCloseFarMarketplace
 
 transaction(tokenID: UInt64, price: UFix64) {
 
-  prepare(acct: AuthAccount) {
+    prepare(acct: AuthAccount) {
 
-    let saleCollection = acct.borrow<&CloseFarMarketplace.SaleCollection>(from: CloseFarMarketplace.marketplaceCollectionStoragePath)
-                          ?? panic("This SaleCollection does not exist")
+      let accountCapability = acct.getCapability(/public/NFTSale)
+  
+      let saleCollection = accountCapability.borrow<&CloseFarMarketplace.SaleCollection>()
+                    ?? panic("Can't get the User's sale collection.")
 
-    saleCollection.listForSale(tokenID: tokenID, price: price)
-  }
+      saleCollection.listForSale(tokenID: tokenID, price: price)
 
-  execute {
-    log("A user listed an NFT for Sale")
-  }
+      log("Sale Created for account.")
+    }
 }
 
